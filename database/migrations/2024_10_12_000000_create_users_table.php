@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if(!Schema::hasTable('personal_access_tokens')) {
-            Schema::create('personal_access_tokens', function (Blueprint $table) {
+        if(!Schema::hasTable('users')) {
+            Schema::create('users', function (Blueprint $table) {
                 $table->id();
-                $table->morphs('tokenable');
+                $table->foreignId('role_id')->default(2)->constrained();
                 $table->string('name');
-                $table->string('token', 64)->unique();
-                $table->text('abilities')->nullable();
-                $table->timestamp('last_used_at')->nullable();
-                $table->timestamp('expires_at')->nullable();
+                $table->string('email')->unique();
+                $table->timestamp('email_verified_at')->nullable();
+                $table->string('password');
+                $table->rememberToken();
                 $table->timestamps();
             });
         }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('personal_access_tokens');
+        Schema::dropIfExists('users');
     }
 };
