@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ApplicationsController;
+use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,15 +16,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return redirect('dashboard');
-})->middleware('auth');
+Route::group(['middleware'=> 'auth'], function(){
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/', [MainController::class, 'index'])->name('main');
 
+Route::get('/dashboard', [ApplicationsController::class, 'index'])->name('dashboard');
 
+Route::resource('applications', ApplicationsController::class);
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

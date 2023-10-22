@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('subject');
             $table->text('message');
-            $table->text('file_url');
-            $table->timestamps();
+            $table->text('file_url')->nullable();
+            $table->timestamps(date_default_timezone_set('Asia/Tashkent'));
         });
     }
 

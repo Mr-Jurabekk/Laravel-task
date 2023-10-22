@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Applications;
 use Illuminate\Http\Request;
 
 class ApplicationsController extends Controller
@@ -11,7 +12,9 @@ class ApplicationsController extends Controller
      */
     public function index()
     {
-        //
+        return view('dashboard')->with([
+            'applications' => Applications::paginate(10),
+        ]);
     }
 
     /**
@@ -27,15 +30,40 @@ class ApplicationsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        if ($request->hasFile('file')){
+
+            $file = $request->file('file');
+            $name = $file->hashName();
+
+            $path = $request->file('file')->storeAs(
+                'files', $name, 'public'
+            );
+        }
+
+        $request->validate([
+           'subject' => 'required',
+           'message' => 'required',
+           'file' => 'file|mimes:jpg,png,pdf,docx'
+        ]);
+
+        $app = Applications::create([
+           'user_id' => auth()->user()->id,
+           'subject' => $request->subject,
+           'message' => $request->message,
+           'file_url' => $path ?? null
+        ]);
+        return redirect()->back();
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Applications $application)
     {
-        //
+        return view('show-application')->with([
+           'application' => $application
+        ]);
     }
 
     /**
