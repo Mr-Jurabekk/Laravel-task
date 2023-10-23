@@ -9,6 +9,7 @@ class Applications extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
         'user_id',
         "subject",

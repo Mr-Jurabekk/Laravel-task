@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendEmailJob;
+use App\Mail\ApplicationCreated;
 use App\Models\Applications;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class ApplicationsController extends Controller
 {
@@ -47,12 +52,15 @@ class ApplicationsController extends Controller
            'file' => 'file|mimes:jpg,png,pdf,docx'
         ]);
 
-        $app = Applications::create([
+        $application = Applications::create([
            'user_id' => auth()->user()->id,
            'subject' => $request->subject,
            'message' => $request->message,
            'file_url' => $path ?? null
         ]);
+
+        dispatch(new SendEmailJob($application));
+
         return redirect()->back();
     }
 
