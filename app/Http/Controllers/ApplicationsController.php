@@ -6,6 +6,7 @@ use App\Jobs\SendEmailJob;
 use App\Mail\ApplicationCreated;
 use App\Models\Applications;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -35,6 +36,10 @@ class ApplicationsController extends Controller
      */
     public function store(Request $request)
     {
+        if ($this->checkdate()){
+            return redirect()->back()->with('error', 'You can send an application one time a day!');
+        }
+
 
         if ($request->hasFile('file')){
 
@@ -61,7 +66,7 @@ class ApplicationsController extends Controller
 
         dispatch(new SendEmailJob($application));
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'The application has been sent successfully 😊');
     }
 
     /**
@@ -96,5 +101,21 @@ class ApplicationsController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    protected function checkdate()
+    {
+
+        $last_app = \auth()->user()->applications()->latest()->first();
+        if ($last_app == null){
+            return false;
+        }
+
+        $app_created = Carbon::parse($last_app->created_at)->format('Y-m-d');
+        $today = Carbon::now()->format('Y-m-d');
+
+        if ($today == $app_created){
+            return true;
+        }
     }
 }

@@ -49,6 +49,17 @@
                         {{$applications->links()}}
                     @else
 
+                        @if(session()->has('error'))
+                            <div class="alert alert-danger" role="alert">
+                                {{session()->get('error')}}
+                            </div>
+                            @endif
+                            @if(session()->has('success'))
+                            <div class="alert alert-success" role="alert">
+                                {{session()->get('success')}}
+                            </div>
+                            @endif
+
                         <form action="{{route('applications.store')}}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group mb-4">
