@@ -27,6 +27,7 @@
                             </tr>
                             </thead>
                             <tbody>
+
                             @foreach($applications as $application)
                                 <tr>
                                     <td>{{$application->id}}</td>
@@ -35,10 +36,19 @@
                                     <td>{{$application->created_at}}</td>
                                     <td>
                                         <div class="d-flex justify-between w-50">
-                                            <div><a href="{{route('applications.show', ['application' => $application->id])}}"><i class="fa-solid fa-eye"></i></a></div>
+                                            <div>
+                                                <a href="{{route('applications.show', ['application' => $application->id])}}">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </a>
+                                            </div>
                                             <div class="text-gray-300">|</div>
-                                            <div><a class="text-danger" href="{{route('applications.destroy', ['application' => $application->id])}}"><i
-                                                        class="fa-solid fa-trash-can"></i></a></div>
+                                            <div>
+                                                <form action="{{route('applications.destroy', ['application' => $application->id])}}" method="POST">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="text-danger" type="submit"><i class="fa-solid fa-trash-can"></i></button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -53,12 +63,12 @@
                             <div class="alert alert-danger" role="alert">
                                 {{session()->get('error')}}
                             </div>
-                            @endif
-                            @if(session()->has('success'))
+                        @endif
+                        @if(session()->has('success'))
                             <div class="alert alert-success" role="alert">
                                 {{session()->get('success')}}
                             </div>
-                            @endif
+                        @endif
 
                         <form action="{{route('applications.store')}}" method="POST" enctype="multipart/form-data">
                             @csrf
@@ -68,7 +78,8 @@
                             </div>
                             <div class="form-group mb-4">
                                 <label class="mb-2" for="exampleInputMessage">Message</label>
-                                <textarea class="form-control" name="message" id="exampleInputMessage" cols="30" rows="5"></textarea>
+                                <textarea class="form-control" name="message" id="exampleInputMessage" cols="30"
+                                          rows="5"></textarea>
                             </div>
                             <div class="form-group mb-4">
                                 <label class="mb-2">File</label>

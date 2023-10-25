@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreApplicationRequest;
 use App\Jobs\SendEmailJob;
 use App\Mail\ApplicationCreated;
 use App\Models\Applications;
@@ -9,6 +10,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 
 class ApplicationsController extends Controller
@@ -16,11 +18,10 @@ class ApplicationsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Applications $applications)
     {
-        return view('dashboard')->with([
-            'applications' => Applications::paginate(10),
-        ]);
+        return view('answer.user-page.index')->with('applications', auth()->user()->applications()->latest()->paginate(5));
+
     }
 
     /**
@@ -31,10 +32,9 @@ class ApplicationsController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+
+
+    public function store(StoreApplicationRequest $request)
     {
         if ($this->checkdate()){
             return redirect()->back()->with('error', 'You can send an application one time a day!');
@@ -51,11 +51,6 @@ class ApplicationsController extends Controller
             );
         }
 
-        $request->validate([
-           'subject' => 'required',
-           'message' => 'required',
-           'file' => 'file|mimes:jpg,png,pdf,docx'
-        ]);
 
         $application = Applications::create([
            'user_id' => auth()->user()->id,
@@ -71,9 +66,15 @@ class ApplicationsController extends Controller
 
     /**
      * Display the specified resource.
+     * @param Applications $applications
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
      */
     public function show(Applications $application)
     {
+        if (! Gate::allows('answer-application', auth()->user())) {
+            abort(401);
+        }
+
         return view('show-application')->with([
            'application' => $application
         ]);
@@ -98,9 +99,11 @@ class ApplicationsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Applications $application)
     {
-        //
+        $application->delete();
+
+        return redirect()->back();
     }
 
     protected function checkdate()

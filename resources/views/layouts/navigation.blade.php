@@ -16,6 +16,15 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
+                @if(auth()->user()->role->name !== 'Manager')
+
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                        <x-nav-link :href="route('applications.index')" :active="request()->routeIs('applications.index')">
+                            {{ __('My user-page') }}
+                        </x-nav-link>
+                    </div>
+                @endif
+
             </div>
 
             <!-- Settings Dropdown -->

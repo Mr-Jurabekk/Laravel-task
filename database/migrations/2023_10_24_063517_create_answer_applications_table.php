@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user-page', function (Blueprint $table) {
+        Schema::create('answer_applications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->text('subject');
-            $table->text('message');
-            $table->text('file_url')->nullable();
-            $table->timestamps(date_default_timezone_set('Asia/Tashkent'));
+            $table->foreignId('applications_id')->constrained()->onDelete('cascade');
+            $table->text('body');
+            $table->timestamps();
         });
     }
 
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user-page');
+        Schema::dropIfExists('answer_applications');
     }
 };
